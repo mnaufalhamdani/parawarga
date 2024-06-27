@@ -1,0 +1,8 @@
+Options +FollowSymlinks -Indexes
+RewriteEngine on
+
+DirectoryIndex public/index.php
+RewriteCond $1 !^(public/index\.php|resources|robots\.txt)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ public/index.php/$1 [L,QSA]
