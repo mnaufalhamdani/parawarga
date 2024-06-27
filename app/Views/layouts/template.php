@@ -16,7 +16,7 @@
     <meta name="description" content="" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/assets/img/favicon/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="<?= base_url() ?>public/assets/img/favicon/favicon.ico" />
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -28,16 +28,16 @@
       href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" 
       rel="stylesheet"/>
 
-    <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css" />
+    <link rel="stylesheet" href="<?= base_url() ?>public/assets/vendor/fonts/boxicons.css" />
 
     <!-- Core CSS -->
-    <link rel="stylesheet" href="/assets/vendor/css/core.css" class="template-customizer-core-css" />
-    <link rel="stylesheet" href="/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
-    <link rel="stylesheet" href="/assets/css/demo.css" />
+    <link rel="stylesheet" href="<?= base_url() ?>public/assets/vendor/css/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="<?= base_url() ?>public/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="<?= base_url() ?>public/assets/css/demo.css" />
 
     <!-- Select2 -->
-    <link rel="stylesheet" href="/assets/vendor/css/select2.css" />
-    <link rel="stylesheet" href="/assets/vendor/css/bootstrap-select.css" />
+    <link rel="stylesheet" href="<?= base_url() ?>public/assets/vendor/css/select2.css" />
+    <link rel="stylesheet" href="<?= base_url() ?>public/assets/vendor/css/bootstrap-select.css" />
 
     <!-- Vendors CSS -->
     <!-- <link rel="stylesheet" href="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
@@ -49,8 +49,8 @@
     <!-- Page CSS -->
 
     <!-- Helpers -->
-    <script src="/assets/vendor/js/helpers.js"></script>
-    <script src="/assets/js/config.js"></script>
+    <script src="<?= base_url() ?>public/assets/vendor/js/helpers.js"></script>
+    <script src="<?= base_url() ?>public/assets/js/config.js"></script>
   </head>
   <body>
     <!-- Layout wrapper -->
@@ -118,16 +118,16 @@
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
 
-    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
-    <script src="/assets/vendor/libs/popper/popper.js"></script>
-    <script src="/assets/vendor/js/bootstrap.js"></script>
-    <script src="/assets/vendor/js/menu.js"></script>
+    <script src="<?= base_url() ?>public/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="<?= base_url() ?>public/assets/vendor/libs/popper/popper.js"></script>
+    <script src="<?= base_url() ?>public/assets/vendor/js/bootstrap.js"></script>
+    <script src="<?= base_url() ?>public/assets/vendor/js/menu.js"></script>
     <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.7/b-3.0.2/b-html5-3.0.2/b-print-3.0.2/r-3.0.2/datatables.min.js"></script>
     
     <!-- endbuild -->
     
     <!-- Main JS -->
-    <script src="/assets/js/main.js"></script>
+    <script src="<?= base_url() ?>public/assets/js/main.js"></script>
     
     <!-- Additional JS -->
     <!-- <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script> -->
@@ -135,9 +135,9 @@
     <script src="/assets/vendor/libs/apex-charts/apexcharts.js"></script> -->
 
     <!-- Select2 -->
-    <script src="/assets/js/select2.js"></script>
-    <script src="/assets/js/bootstrap-select.js"></script>
-    <script src="/assets/js/forms-selects.js"></script>
+    <script src="<?= base_url() ?>public/assets/js/select2.js"></script>
+    <script src="<?= base_url() ?>public/assets/js/bootstrap-select.js"></script>
+    <script src="<?= base_url() ?>public/assets/js/forms-selects.js"></script>
 
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
