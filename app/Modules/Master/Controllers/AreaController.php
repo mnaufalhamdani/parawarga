@@ -10,7 +10,7 @@ class AreaController extends BaseController
     public function __construct()
     {
         $this->data = [
-            'table' => 'master_area',
+            'table' => 'area',
             'title' => 'Area',
             'route' => 'master/area',
             'view' => 'Master\area',
