@@ -82,7 +82,7 @@
                         </div>
                     </div>
                     <div class="card col-md-2 col-sm-2">
-                        <img src="<?= @$model['photo_area'] ? @$model['photo_area'] : '/assets/img/icons/default/img_default.png' ?>" class="card-image img-preview" alt="Card image">
+                        <img src="<?= @$model['photo_area'] ? @$model['photo_area'] : base_url() . 'public/assets/img/default/img_default.png' ?>" class="card-image img-preview" alt="Card image">
                     </div>
                 </div>
 

@@ -63,8 +63,8 @@
                         <td width="10"><label>:</label></td>
                         <td class="py-3 table-body-content">
                             <div class="card col-md-2 col-sm-2">
-                                <a href="<?= base_url($model['photo_area'])?>" target="_blank">
-                                    <img src="<?= $model['photo_area'] ?>" class="card-image" alt="Card image" width="150px" height="150px">
+                                <a href="<?= base_url('public/' . $model['photo_area']) ?>" target="_blank">
+                                    <img src="<?= base_url('public/' . $model['photo_area']) ?>" class="card-image" alt="Card image" width="150px" height="150px">
                                 </a>
                             </div>
                         </td>

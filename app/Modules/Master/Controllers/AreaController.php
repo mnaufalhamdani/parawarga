@@ -10,7 +10,7 @@ class AreaController extends BaseController
     public function __construct()
     {
         $this->data = [
-            'table' => 'master_area',
+            'table' => 'area',
             'title' => 'Area',
             'route' => 'master/area',
             'view' => 'Master\area',
@@ -126,7 +126,7 @@ class AreaController extends BaseController
                 //handle file
                 $file = $this->request->getFile('photo_area');
                 if($file->getError() == 4){
-                    $fileName = '/assets/img/icons/default/img_default.png';
+                    $fileName = '/assets/img/default/img_default.png';
                 }else{
                     $fileName = $file->getRandomName();
                     $file->move('img/area', $fileName);
@@ -198,7 +198,7 @@ class AreaController extends BaseController
                     $file->move('img/area', $fileName);
                     $fileName = '/img/area/' . $fileName;
 
-                    if($photoAreaOld != '/assets/img/icons/default/img_default.png'){
+                    if($photoAreaOld != '/assets/img/default/img_default.png'){
                         @unlink(substr($photoAreaOld, 1));
                     }
                 }
@@ -225,7 +225,7 @@ class AreaController extends BaseController
             $data = $model->find(base64_decode($request['id']));
 
             if($model->delete(base64_decode($request['id']))){
-                if($data['photo_area'] != '/assets/img/icons/default/img_default.png'){
+                if($data['photo_area'] != '/assets/img/default/img_default.png'){
                     @unlink(substr($data['photo_area'], 1));
                 }
 
