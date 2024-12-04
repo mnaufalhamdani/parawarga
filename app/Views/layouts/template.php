@@ -28,20 +28,20 @@
       href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" 
       rel="stylesheet"/>
 
-    <link rel="stylesheet" href="<?= base_url() ?>public/assets/vendor/fonts/boxicons.css" />
+    <link rel="stylesheet" href="<?= base_url() ?>public/assets/third-party/fonts/boxicons.css" />
 
     <!-- Core CSS -->
-    <link rel="stylesheet" href="<?= base_url() ?>public/assets/vendor/css/core.css" class="template-customizer-core-css" />
-    <link rel="stylesheet" href="<?= base_url() ?>public/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="<?= base_url() ?>public/assets/third-party/css/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="<?= base_url() ?>public/assets/third-party/css/theme-default.css" class="template-customizer-theme-css" />
     <link rel="stylesheet" href="<?= base_url() ?>public/assets/css/demo.css" />
 
     <!-- Select2 -->
-    <link rel="stylesheet" href="<?= base_url() ?>public/assets/vendor/css/select2.css" />
-    <link rel="stylesheet" href="<?= base_url() ?>public/assets/vendor/css/bootstrap-select.css" />
+    <link rel="stylesheet" href="<?= base_url() ?>public/assets/third-party/css/select2.css" />
+    <link rel="stylesheet" href="<?= base_url() ?>public/assets/third-party/css/bootstrap-select.css" />
 
-    <!-- Vendors CSS -->
-    <!-- <link rel="stylesheet" href="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
-    <link rel="stylesheet" href="/assets/vendor/libs/apex-charts/apex-charts.css" /> -->
+    <!-- Third Party CSS -->
+    <!-- <link rel="stylesheet" href="/assets/third-party/libs/perfect-scrollbar/perfect-scrollbar.css" />
+    <link rel="stylesheet" href="/assets/third-party/libs/apex-charts/apex-charts.css" /> -->
 
     <!-- Datatables -->
     <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.7/b-3.0.2/b-html5-3.0.2/b-print-3.0.2/r-3.0.2/datatables.min.css" rel="stylesheet">
@@ -49,7 +49,7 @@
     <!-- Page CSS -->
 
     <!-- Helpers -->
-    <script src="<?= base_url() ?>public/assets/vendor/js/helpers.js"></script>
+    <script src="<?= base_url() ?>public/assets/third-party/js/helpers.js"></script>
     <script src="<?= base_url() ?>public/assets/js/config.js"></script>
   </head>
   <body>
@@ -116,12 +116,12 @@
     </div>
 
     <!-- Core JS -->
-    <!-- build:js assets/vendor/js/core.js -->
+    <!-- build:js assets/third-party/js/core.js -->
 
-    <script src="<?= base_url() ?>public/assets/vendor/libs/jquery/jquery.js"></script>
-    <script src="<?= base_url() ?>public/assets/vendor/libs/popper/popper.js"></script>
-    <script src="<?= base_url() ?>public/assets/vendor/js/bootstrap.js"></script>
-    <script src="<?= base_url() ?>public/assets/vendor/js/menu.js"></script>
+    <script src="<?= base_url() ?>public/assets/third-party/libs/jquery/jquery.js"></script>
+    <script src="<?= base_url() ?>public/assets/third-party/libs/popper/popper.js"></script>
+    <script src="<?= base_url() ?>public/assets/third-party/js/bootstrap.js"></script>
+    <script src="<?= base_url() ?>public/assets/third-party/js/menu.js"></script>
     <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.7/b-3.0.2/b-html5-3.0.2/b-print-3.0.2/r-3.0.2/datatables.min.js"></script>
     
     <!-- endbuild -->
@@ -130,9 +130,9 @@
     <script src="<?= base_url() ?>public/assets/js/main.js"></script>
     
     <!-- Additional JS -->
-    <!-- <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script> -->
+    <!-- <script src="/assets/third-party/libs/perfect-scrollbar/perfect-scrollbar.js"></script> -->
     <!-- <script src="/assets/js/dashboards-analytics.js"></script>
-    <script src="/assets/vendor/libs/apex-charts/apexcharts.js"></script> -->
+    <script src="/assets/third-party/libs/apex-charts/apexcharts.js"></script> -->
 
     <!-- Select2 -->
     <script src="<?= base_url() ?>public/assets/js/select2.js"></script>
