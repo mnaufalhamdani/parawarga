@@ -16,10 +16,11 @@ class AreaController extends ServiceController
         
         $model = $this->db
             ->table('area_user as a')
-            ->select('b.id, b.area_id, b.start_date, b.end_date, COALESCE(c.total_unit, 0) total_unit, COALESCE(d.total_user, 0) total_user')
+            ->select('b.id, b.area_id, c.area_name, b.start_date, b.end_date, COALESCE(d.total_unit, 0) total_unit, COALESCE(e.total_user, 0) total_user')
             ->join('area_management b', 'a.area_id = b.area_id', 'LEFT')
-            ->join('(SELECT COUNT(id) total_unit, area_id FROM area_unit WHERE status = 1) c', 'a.area_id = c.area_id', 'LEFT')
-            ->join('(SELECT COUNT(id) total_user, area_id FROM area_user WHERE status = 1) d', 'a.area_id = d.area_id', 'LEFT')
+            ->join('area c', 'a.area_id = c.id', 'LEFT')
+            ->join('(SELECT COUNT(id) total_unit, area_id FROM area_unit WHERE status = 1) d', 'a.area_id = d.area_id', 'LEFT')
+            ->join('(SELECT COUNT(id) total_user, area_id FROM area_user WHERE status = 1) e', 'a.area_id = e.area_id', 'LEFT')
             ->where('b.status', 1)
             ->where('a.user_id', $userId)
             ->where('b.start_date <=', date('Y-m-d'))
