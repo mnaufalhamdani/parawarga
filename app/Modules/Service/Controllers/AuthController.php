@@ -44,7 +44,7 @@ class AuthController extends ServiceController
                 }
     
                 $model['area'] = $this->db
-                    ->table("master_area as a")
+                    ->table("area as a")
                     ->select("a.*, b.license_code_validation, b.end_date, b.license_type,
                             kelurahan_name, provinsi_name, kabupaten_name, kecamatan_name")
                     ->join("area_license as b", "a.id = b.area_id", "LEFT")
@@ -70,16 +70,16 @@ class AuthController extends ServiceController
                      */
                     $key = getenv('jwtKey');
                     $iat = time(); //current timestamp value
-                    $exp = $iat + (60 * 60 * 24 * 30); //30 day
+                    $exp = $iat + (60 * 60 * 24 * 1); //1 day
     
     
                     $payload = array(
-                        "iss" => "For login",
-                        "aud" => "For all users",
-                        "sub" => "For Apps",
+                        "iss" => getenv('CI_ENVIRONMENT'),
+                        "aud" => getenv('app.baseURL'),
+                        "sub" => $key,
                         "iat" => $iat,
                         "exp" => $exp,
-                        "email" => $model['username'],
+                        "id" => $model['id'],
                     );
                      
                     $model['token'] = JWT::encode($payload, $key, 'HS256');
