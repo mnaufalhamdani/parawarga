@@ -25,9 +25,8 @@ class AuthController extends ServiceController
     
             $model = $this->db
                 ->table($this->data['table'] . " as a")
-                ->select("a.*, b.role, c.name status_keluarga_name, d.name status_pekerjaan_name,
+                ->select("a.*, c.name status_keluarga_name, d.name status_pekerjaan_name,
                         e.name status_agama_name, f.name status_nikah_name")
-                ->join("user_role as b", "a.role_id = b.id", "LEFT")
                 ->join("master_option as c", "a.status_keluarga = c.id", "LEFT")
                 ->join("master_option as d", "a.status_pekerjaan = d.id", "LEFT")
                 ->join("master_option as e", "a.status_agama = e.id", "LEFT")
@@ -44,23 +43,32 @@ class AuthController extends ServiceController
                 }
     
                 $model['area'] = $this->db
-                    ->table("area as a")
-                    ->select("a.*, b.license_code_validation, b.end_date, b.license_type,
+                    ->table("area_user as a")
+                    ->select("a.area_id, a.titik_code, a.role_id, h.role, c.license_code_validation, 
+                            c.end_date, c.license_type, c.status,
                             kelurahan_name, provinsi_name, kabupaten_name, kecamatan_name")
-                    ->join("area_license as b", "a.id = b.area_id", "LEFT")
-                    ->join("master_kelurahan as c", "a.kelurahan_id = c.id", "LEFT")
-                    ->join("master_provinsi as d", "SUBSTRING_INDEX(SUBSTRING_INDEX(a.kelurahan_id, '.', 1), '.', 1) = d.id", "LEFT")
-                    ->join("master_kabupaten_kota as e", "SUBSTRING_INDEX(SUBSTRING_INDEX(a.kelurahan_id, '.', 2), '.', 2) = e.id", "LEFT")
-                    ->join("master_kecamatan as f", "SUBSTRING_INDEX(SUBSTRING_INDEX(a.kelurahan_id, '.', 3), '.', 3) = f.id", "LEFT")
-                    ->where('a.id', $model['area_code'])
+                    ->join("area as b", "a.area_id = b.id", "LEFT")
+                    ->join("area_license as c", "a.area_id = c.area_id", "LEFT")
+                    ->join("master_kelurahan as d", "b.kelurahan_id = d.id", "LEFT")
+                    ->join("master_provinsi as e", "SUBSTRING_INDEX(SUBSTRING_INDEX(b.kelurahan_id, '.', 1), '.', 1) = e.id", "LEFT")
+                    ->join("master_kabupaten_kota as f", "SUBSTRING_INDEX(SUBSTRING_INDEX(b.kelurahan_id, '.', 2), '.', 2) = f.id", "LEFT")
+                    ->join("master_kecamatan as g", "SUBSTRING_INDEX(SUBSTRING_INDEX(b.kelurahan_id, '.', 3), '.', 3) = g.id", "LEFT")
+                    ->join("user_role as h", "a.role_id = h.id", "LEFT")
+                    ->where('a.user_id', $model['id'])
                     ->where('a.status', 1)
-                    ->get()->getRowArray();
+                    ->get()->getResultArray();
                 
                 if($model['area']){//area ditemukan
-                    if(empty($model['area']['license_code_validation'])){//license_code_validation null
-                        return $this->fail('Lisensi Area Anda tidak ditemukan');
-                    }else if(date('Y-m-d H:i:s') > $model['area']['end_date']){//tanggal sekarang lebih dari end_date
-                        return $this->fail('Lisensi Area Anda kadaluarsa');
+                    foreach($model['area'] as $key => $value) {
+                        if(empty($value['license_code_validation'])){//license_code_validation null
+                            // return $this->fail('Lisensi Area Anda tidak ditemukan');
+                            $model['area'][$key]['license_type'] = "BLOCK";
+                            $model['area'][$key]['status'] = 0;
+                        }else if(date('Y-m-d H:i:s') > $value['end_date']){//tanggal sekarang lebih dari end_date
+                            // return $this->fail('Lisensi Area Anda kadaluarsa');
+                            $model['area'][$key]['license_type'] = "EXPIRED";
+                            $model['area'][$key]['status'] = 0;
+                        }
                     }
     
                     /**
@@ -70,7 +78,7 @@ class AuthController extends ServiceController
                      */
                     $key = getenv('jwtKey');
                     $iat = time(); //current timestamp value
-                    $exp = $iat + (60 * 60 * 24 * 1); //1 day
+                    $exp = $iat + (60 * 60 * 24 * 30); //30 day
     
     
                     $payload = array(
