@@ -96,7 +96,7 @@ class AreaController extends ServiceController
         if(!empty($userId)){
             $andWhere .= ' and c.created_by = ' . $userId;
         }
-        
+
         $model = $this->db
             ->table('area_user as a')
             ->select('c.id, 
@@ -151,21 +151,45 @@ class AreaController extends ServiceController
 
     public function getInformation()
     {
-        $userId = $this->request->getGet('user_id');
+        $areaArray = $this->request->getGet('area_array');
+        $date = $this->request->getGet('date');//Y-m-d
 
         $model = $this->db
             ->table('area_user as a')
-            ->select('c.id, c.title, c.message, c.expired, c.urgent, c.created_by, d.area_name')
-            ->join('area_license b', 'a.area_id = b.area_id', 'LEFT')
-            ->join("area_information c", "b.area_id = c.area_id", "LEFT")
-            ->join("area d", "b.area_id = d.id", "LEFT")
+            ->select('b.id, b.title, b.message, b.expired, b.urgent, b.created_by, d.name created_name, c.area_name')
+            ->join("area_information b", "a.area_id = b.area_id", "LEFT")
+            ->join("area c", "a.area_id = c.id", "LEFT")
+            ->join("user d", "b.created_by = d.id", "LEFT")
             ->where('a.status', 1)
             ->where('b.status', 1)
-            ->where('c.status', 1)
-            ->where('a.user_id', $userId)
-            ->where('c.expired >=', date('Y-m-d'))
-            ->orderBy('c.urgent', 'DESC')
-            ->orderBy('c.expired', 'ASC')
+            ->whereIn('a.area_id', explode(',', $areaArray))
+            ->where('b.expired >=', $date)
+            ->orderBy('b.urgent', 'DESC')
+            ->orderBy('b.expired', 'ASC')
+            ->get()->getResultArray();
+
+        if(!empty($model)){
+            return $this->respondSuccess($model);  
+        }else {
+            return $this->failNotFound('Informasi tidak ditemukan');
+        }
+    }
+
+    public function getIssue()
+    {
+        $areaArray = $this->request->getGet('area_array');
+        $date = $this->request->getGet('date');//Y-m-d
+
+        $model = $this->db
+            ->table('area_user as a')
+            ->select('b.id, b.title, b.message, b.additional_location, b.created_by, d.name created_name, c.area_name')
+            ->join("area_issue b", "a.area_id = b.area_id", "LEFT")
+            ->join("area c", "a.area_id = c.id", "LEFT")
+            ->join("user d", "b.created_by = d.id", "LEFT")
+            ->where('a.status', 1)
+            ->where('b.status', 1)
+            ->whereIn('a.area_id', explode(',', $areaArray))
+            ->orderBy('b.updated_at', 'DESC')
             ->get()->getResultArray();
 
         if(!empty($model)){

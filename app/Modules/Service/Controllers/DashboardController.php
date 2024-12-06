@@ -13,6 +13,8 @@ class DashboardController extends ServiceController
     public function getViewDashboard()
     {
         $userId = $this->request->getGet('user_id');
+        $areaArray = $this->request->getGet('area_array');
+        $date = $this->request->getGet('date');
         
         $model = $this->db
             ->table('area_user as a')
@@ -27,6 +29,34 @@ class DashboardController extends ServiceController
         // var_dump($this->db->getLastQuery());
 
         if(!empty($model['user_id'])){
+            $model['information'] = $this->db
+                ->table('area_user as a')
+                ->select('b.id, b.title, b.message, b.expired, b.urgent, b.created_by, d.name created_name, c.area_name')
+                ->join("area_information b", "a.area_id = b.area_id", "LEFT")
+                ->join("area c", "a.area_id = c.id", "LEFT")
+                ->join("user d", "b.created_by = d.id", "LEFT")
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->whereIn('a.area_id', explode(',', $areaArray))
+                ->where('b.expired >=', $date)
+                ->orderBy('b.urgent', 'DESC')
+                ->orderBy('b.expired', 'ASC')
+                ->limit(5)
+                ->get()->getResultArray();
+
+            $model['issue'] = $this->db
+                ->table('area_user as a')
+                ->select('b.id, b.title, b.message, b.additional_location, b.created_by, d.name created_name, c.area_name')
+                ->join("area_issue b", "a.area_id = b.area_id", "LEFT")
+                ->join("area c", "a.area_id = c.id", "LEFT")
+                ->join("user d", "b.created_by = d.id", "LEFT")
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->whereIn('a.area_id', explode(',', $areaArray))
+                ->orderBy('b.updated_at', 'DESC')
+                ->limit(5)
+                ->get()->getResultArray();
+
             return $this->respondSuccess($model);  
         }else {
             return $this->failNotFound('Data Dashboard tidak ditemukan');

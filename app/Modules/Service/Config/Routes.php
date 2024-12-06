@@ -11,6 +11,7 @@ $routes->group('service', ['filter' => 'authFilter'], static function ($routes) 
     $routes->get('area/getAccountBank', [AreaController::class, 'getAccountBank']);
     $routes->get('area/getAllUnit', [AreaController::class, 'getAllUnit']);
     $routes->get('area/getInformation', [AreaController::class, 'getInformation']);
+    $routes->get('area/getIssue', [AreaController::class, 'getIssue']);
     $routes->post('area/saveArea', [AreaController::class, 'saveArea']);
 });
 
