@@ -58,4 +58,32 @@ abstract class ServiceController extends Controller
         //connect database
         $this->db = \Config\Database::connect();
     }    
+
+    /**
+     * encode string to binary
+     * @param $text
+     * @return binary cast string
+     */
+    protected static function strToBinary($text) {
+        $text = (string) $text;
+        $binary = '';
+        for ($i = 0; $i < strlen($text); $i++) {
+            $binary .= sprintf("%08b", ord($text[$i]));
+        }
+        return (isset($binary) ? $binary : null);
+    }
+
+    /**
+     * decode binary to string
+     * @param $binary
+     * @return string
+     */
+    protected static function binaryToStr($binary) 
+    {
+        $string = '';
+        for ($i = 0; $i < strlen($binary); $i += 8) {
+            $string .= chr(bindec(substr($binary, $i, 8)));
+        }
+        return (isset($string) ? $string : null);
+    }
 }
