@@ -62,6 +62,12 @@ class AuthFilter implements FilterInterface
 
         try {
             $decoded = JWT::decode($token, new Key($key, 'HS256'));
+
+            $user= new \StdClass();
+            $user->user_id = $this->binaryToStr($decoded->id);
+
+            $request->user = $user;
+            return $request;
         } catch (InvalidArgumentException $e) {
             // provided key/key-array is empty or malformed.
             $messageError = $e->getMessage();
@@ -122,5 +128,19 @@ class AuthFilter implements FilterInterface
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
         //
+    }
+
+    /**
+     * decode binary to string
+     * @param $binary
+     * @return string
+     */
+    private static function binaryToStr($binary) 
+    {
+        $string = '';
+        for ($i = 0; $i < strlen($binary); $i += 8) {
+            $string .= chr(bindec(substr($binary, $i, 8)));
+        }
+        return (isset($string) ? $string : null);
     }
 }
