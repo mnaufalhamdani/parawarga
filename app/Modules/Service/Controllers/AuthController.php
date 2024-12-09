@@ -87,7 +87,7 @@ class AuthController extends ServiceController
                         "sub" => $key,
                         "iat" => $iat,
                         "exp" => $exp,
-                        "id" => $model['id'],
+                        "id" => $this->strToBinary($model['id']),
                     );
                      
                     $model['token'] = JWT::encode($payload, $key, 'HS256');

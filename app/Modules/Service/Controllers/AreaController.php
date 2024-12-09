@@ -10,6 +10,11 @@ class AreaController extends ServiceController
 {
     use ResponseTrait;
 
+    /**
+     * create new area and save in database
+     * @body $data json encode from API
+     * @return general response
+     */
     public function saveArea()
     {
         try{
@@ -38,10 +43,15 @@ class AreaController extends ServiceController
         }
     }
 
+    /**
+     * get area management data related to the user's requested area
+     * @param $area_array data with coma, $date (Y-m-d)
+     * @return custom
+     */
     public function getAreaManagement()
     {
         $areaArray = $this->request->getGet('area_array');
-        $date = $this->request->getGet('date');//Y-m-d
+        $date = $this->request->getGet('date');
 
         $model = $this->db
             ->table('area_user as a')
@@ -82,6 +92,11 @@ class AreaController extends ServiceController
         }
     }
 
+    /**
+     * get data unit related to the user area that requested
+     * @param $area_array data with coma, $empty (optional) to display empty unit (1), $user_id (optional) to display units based on user requests
+     * @return custom
+     */
     public function getAllUnit()
     {
         $areaArray = $this->request->getGet('area_array');
@@ -127,6 +142,11 @@ class AreaController extends ServiceController
         }
     }
 
+    /**
+     * get data of all registered bank accounts for the request area
+     * @param $area_id one area request
+     * @return custom
+     */
     public function getAccountBank()
     {
         $areaId = $this->request->getGet('area_id');
@@ -149,14 +169,27 @@ class AreaController extends ServiceController
         }
     }
 
+    /**
+     * get data information to display all information related to the request area
+     * @param $area_array data with coma, $date (Y-m-d)
+     * @return custom
+     */
     public function getInformation()
     {
         $areaArray = $this->request->getGet('area_array');
-        $date = $this->request->getGet('date');//Y-m-d
+        $date = $this->request->getGet('date');
 
         $model = $this->db
             ->table('area_user as a')
-            ->select('b.id, b.title, b.message, b.expired, b.urgent, b.created_by, d.name created_name, c.area_name')
+            ->select("b.id, 
+                b.title, 
+                b.message, 
+                b.expired, 
+                b.urgent, 
+                b.created_by, 
+                d.name created_name, 
+                c.area_name,
+                DATE_FORMAT(b.updated_at, '%d %M %Y %H:%i') updated_at")
             ->join("area_information b", "a.area_id = b.area_id", "LEFT")
             ->join("area c", "a.area_id = c.id", "LEFT")
             ->join("user d", "b.created_by = d.id", "LEFT")
@@ -175,6 +208,45 @@ class AreaController extends ServiceController
         }
     }
 
+    /**
+     * get data information detail based on request id
+     * @param $id is information id, $user_id from token
+     * @return custom
+     */
+    public function getInformationDetail()
+    {
+        $id = $this->request->getGet('id');
+        $userId = $this->request->user->user_id;
+
+        $model = $this->db
+            ->table('area_information as a')
+            ->select("a.id, 
+                a.title, 
+                a.message, 
+                a.expired, 
+                a.urgent, 
+                a.created_by, 
+                c.name created_name, 
+                b.area_name,
+                DATE_FORMAT(a.updated_at, '%d %M %Y %H:%i') updated_at")
+            ->join("area b", "a.area_id = b.id", "LEFT")
+            ->join("user c", "a.created_by = c.id", "LEFT")
+            ->where('a.status', 1)
+            ->where('a.id', $id)
+            ->get()->getRowArray();
+
+        if(!empty($model)){
+            return $this->respondSuccess($model);  
+        }else {
+            return $this->failNotFound('Informasi tidak ditemukan');
+        }
+    }
+
+    /**
+     * get data issue to display all issue related to the request area
+     * @param $area_array data with coma, $date (Y-m-d)
+     * @return custom
+     */
     public function getIssue()
     {
         $areaArray = $this->request->getGet('area_array');
@@ -182,10 +254,19 @@ class AreaController extends ServiceController
 
         $model = $this->db
             ->table('area_user as a')
-            ->select('b.id, b.title, b.message, b.additional_location, b.created_by, d.name created_name, c.area_name')
+            ->select("b.id, 
+                b.title, 
+                b.message, 
+                b.additional_location, 
+                b.created_by, 
+                d.name created_name, 
+                c.area_name,
+                CONCAT('".base_url()."', 'public/', e.attachment) attachment,
+                DATE_FORMAT(b.updated_at, '%d %M %Y %H:%i') updated_at")
             ->join("area_issue b", "a.area_id = b.area_id", "LEFT")
             ->join("area c", "a.area_id = c.id", "LEFT")
             ->join("user d", "b.created_by = d.id", "LEFT")
+            ->join("area_issue_attachment e", "b.id = e.area_id AND e.status_id = 39", "LEFT")
             ->where('a.status', 1)
             ->where('b.status', 1)
             ->whereIn('a.area_id', explode(',', $areaArray))

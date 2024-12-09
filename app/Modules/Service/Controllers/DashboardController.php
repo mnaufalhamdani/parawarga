@@ -10,9 +10,14 @@ class DashboardController extends ServiceController
 {
     use ResponseTrait;
     
+    /**
+     * get all data related to the dashboard in the application 
+     * @param $user_id from token, $area_array data with coma, $date (Y-m-d)
+     * @return custom
+     */
     public function getViewDashboard()
     {
-        $userId = $this->request->getGet('user_id');
+        $userId = $this->request->user->user_id;
         $areaArray = $this->request->getGet('area_array');
         $date = $this->request->getGet('date');
         
@@ -31,7 +36,15 @@ class DashboardController extends ServiceController
         if(!empty($model['user_id'])){
             $model['information'] = $this->db
                 ->table('area_user as a')
-                ->select('b.id, b.title, b.message, b.expired, b.urgent, b.created_by, d.name created_name, c.area_name')
+                ->select("b.id, 
+                    b.title, 
+                    b.message, 
+                    b.expired, 
+                    b.urgent, 
+                    b.created_by, 
+                    d.name created_name, 
+                    c.area_name,
+                    DATE_FORMAT(b.updated_at, '%d %M %Y %H:%i') updated_at")
                 ->join("area_information b", "a.area_id = b.area_id", "LEFT")
                 ->join("area c", "a.area_id = c.id", "LEFT")
                 ->join("user d", "b.created_by = d.id", "LEFT")
@@ -46,10 +59,19 @@ class DashboardController extends ServiceController
 
             $model['issue'] = $this->db
                 ->table('area_user as a')
-                ->select('b.id, b.title, b.message, b.additional_location, b.created_by, d.name created_name, c.area_name')
+                ->select("b.id, 
+                    b.title, 
+                    b.message, 
+                    b.additional_location, 
+                    b.created_by, 
+                    d.name created_name, 
+                    c.area_name,
+                    CONCAT('".base_url()."', 'public/', e.attachment) attachment,
+                    DATE_FORMAT(b.updated_at, '%d %M %Y %H:%i') updated_at")
                 ->join("area_issue b", "a.area_id = b.area_id", "LEFT")
                 ->join("area c", "a.area_id = c.id", "LEFT")
                 ->join("user d", "b.created_by = d.id", "LEFT")
+                ->join("area_issue_attachment e", "b.id = e.area_id AND e.status_id = 39", "LEFT")
                 ->where('a.status', 1)
                 ->where('b.status', 1)
                 ->whereIn('a.area_id', explode(',', $areaArray))
