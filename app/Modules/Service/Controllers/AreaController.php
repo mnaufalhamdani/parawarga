@@ -279,4 +279,69 @@ class AreaController extends ServiceController
             return $this->failNotFound('Informasi tidak ditemukan');
         }
     }
+
+    /**
+     * get data issue detail based on request id
+     * @param $id is information id, $user_id from token
+     * @return custom
+     */
+    public function getIssueDetail()
+    {
+        $id = $this->request->getGet('id');
+        $userId = $this->request->user->user_id;
+
+        $model = $this->db
+            ->table('area_issue as a')
+            ->select("a.id, 
+                a.title, 
+                a.message, 
+                a.latitude, 
+                a.longitude, 
+                a.generate_location, 
+                a.additional_location, 
+                a.created_by, 
+                c.name created_name, 
+                b.area_name,
+                DATE_FORMAT(a.updated_at, '%d %M %Y %H:%i') updated_at")
+            ->join("area b", "a.area_id = b.id", "LEFT")
+            ->join("user c", "a.created_by = c.id", "LEFT")
+            ->where('a.status', 1)
+            ->where('a.id', $id)
+            ->get()->getRowArray();
+
+        if(!empty($model)){
+            $model['history'] = $this->db
+                ->table('area_issue_history as a')
+                ->select("a.issue_id, 
+                    a.urutan, 
+                    a.status_id, 
+                    b.name status_name, 
+                    a.message, 
+                    DATE_FORMAT(a.updated_at, '%d %M %Y %H:%i') updated_at")
+                ->join("master_option b", "a.status_id = b.id", "LEFT")
+                ->where('a.status', 1)
+                ->where('a.issue_id', $model['id'])
+                ->orderBy('a.urutan', 'ASC')
+                ->get()->getResultArray();
+
+            $model['attachment'] = $this->db
+                ->table('area_issue_attachment as a')
+                ->select("a.issue_id, 
+                    a.urutan, 
+                    a.urutan_issue_history, 
+                    a.status_id, 
+                    b.name status_name, 
+                    CONCAT('".base_url()."', 'public/', a.attachment) attachment,
+                    DATE_FORMAT(a.updated_at, '%d %M %Y %H:%i') updated_at")
+                ->join("master_option b", "a.status_id = b.id", "LEFT")
+                ->where('a.status', 1)
+                ->where('a.issue_id', $model['id'])
+                ->orderBy('a.urutan', 'ASC')
+                ->get()->getResultArray();
+
+            return $this->respondSuccess($model);  
+        }else {
+            return $this->failNotFound('Issue tidak ditemukan');
+        }
+    }
 }
