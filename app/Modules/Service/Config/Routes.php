@@ -4,7 +4,14 @@ use Service\Controllers\AuthController;
 use Service\Controllers\AreaController;
 use Service\Controllers\DashboardController;
 
-$routes->post('service/login', [AuthController::class, 'login']);
+$routes->group('service', static function ($routes) {
+    $routes->post('login', [AuthController::class, 'login']);
+    $routes->post('encodeArea', [AuthController::class, 'encodeArea']);
+    $routes->post('verifyEncodeArea', [AuthController::class, 'verifyEncodeArea']);
+    $routes->post('verifyNik', [AuthController::class, 'verifyNik']);
+    $routes->post('register', [AuthController::class, 'register']);
+    $routes->get('userActivation', [AuthController::class, 'userActivation']);
+});
 
 $routes->group('service', ['filter' => 'authFilter'], static function ($routes) {
     $routes->get('area/getAreaManagement', [AreaController::class, 'getAreaManagement']);

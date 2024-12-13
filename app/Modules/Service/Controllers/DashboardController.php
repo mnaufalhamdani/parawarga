@@ -71,7 +71,7 @@ class DashboardController extends ServiceController
                 ->join("area_issue b", "a.area_id = b.area_id", "LEFT")
                 ->join("area c", "a.area_id = c.id", "LEFT")
                 ->join("user d", "b.created_by = d.id", "LEFT")
-                ->join("area_issue_attachment e", "b.id = e.area_id AND e.status_id = 39", "LEFT")
+                ->join("area_issue_attachment e", "b.id = e.issue_id AND e.status_id = 39", "LEFT")
                 ->where('a.status', 1)
                 ->where('b.status', 1)
                 ->whereIn('a.area_id', explode(',', $areaArray))
