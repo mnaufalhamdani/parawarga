@@ -4,15 +4,15 @@ namespace Service\Models;
 
 use CodeIgniter\Model;
 
-class AreaModel extends Model
+class UserModel extends Model
 {
-    protected $table               = 'area_management';
+    protected $table               = 'user';
     protected $primaryKey          = 'id';
-    protected $useAutoIncrement    = false;
+    protected $useAutoIncrement    = true;
     protected $returnType          = 'array';
     protected $useSoftDeletes      = false;
     protected $protectFields       = true;
-    protected $allowedFields       = ['id', 'area_id', 'start_date', 'end_date', 'status', 'created_by', 'updated_by'];
+    protected $allowedFields       = [ 'username', 'password', 'name', 'address_ktp', 'address_domisili', 'email', 'phone', 'nik', 'photo', 'device_id', 'activated_at', 'status'];
     protected bool $allowEmptyInserts   = true;
 
     // Dates
@@ -24,6 +24,10 @@ class AreaModel extends Model
 
     // Validation
     protected $validationRules     = [
+        // 'active'        => 'trim|permit_empty|in_list[0,1]',
+        // 'title'         => 'trim|required|string|min_length[3]|max_length[32]|is_unique[permissions.title]',
+        // 'slug'          => 'trim|permit_empty|max_length[32]|is_unique[permissions.slug]',
+        // 'description'   => 'trim|permit_empty|max_length[255]',
     ];
     protected $validationMessages  = [];
     protected $skipValidation       = false;
