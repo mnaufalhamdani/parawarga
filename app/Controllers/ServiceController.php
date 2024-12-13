@@ -86,4 +86,20 @@ abstract class ServiceController extends Controller
         }
         return (isset($string) ? $string : null);
     }
+
+    /**
+     * encode string to base64 with encrypter
+     * @param $binary
+     * @return string
+     */
+    protected static function strEncode($text) 
+    {
+        $encrypter = \Config\Services::encrypter();
+        $key = getenv('encryption.key');
+        $env = getenv('CI_ENVIRONMENT');
+
+        $ciphertext = $encrypter->encrypt($text, $key);
+        $code = strtr(base64_encode($ciphertext), '+/=', $env);
+        return (isset($code) ? $code : null);
+    }
 }

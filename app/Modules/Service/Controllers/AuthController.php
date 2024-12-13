@@ -6,6 +6,8 @@ use App\Controllers\ServiceController;
 use CodeIgniter\API\ResponseTrait;
 use Firebase\JWT\JWT;
 use Service\Models\AreaCodeGenerateModel;
+use Service\Models\UserModel;
+use Service\Models\AreaUserModel;
 
 class AuthController extends ServiceController
 {
@@ -115,11 +117,7 @@ class AuthController extends ServiceController
      * @body $area_id, $user_id
      * @return custom
      */
-    public function encodeArea() {        
-        $encrypter = \Config\Services::encrypter();
-        $key = getenv('encryption.key');
-        $env = getenv('CI_ENVIRONMENT');
-        
+    public function encodeArea() {                
         $areaId = $this->request->getPost('area_id');
         $userId = $this->request->getPost('user_id');
         $datetime = date('Y-m-d H:i:s');
@@ -130,8 +128,7 @@ class AuthController extends ServiceController
 
         $plainText = $areaId . '_' . $userId . '_' . $datetime;
 
-        $ciphertext = $encrypter->encrypt($plainText, $key);
-        $code = substr(strtr(base64_encode($ciphertext), '+/=', $env), 0, 8);
+        $code = substr($this->strEncode($plainText), 0, 8);
 
         $data = $this->db
             ->table('area_code_generate as a')
@@ -203,7 +200,7 @@ class AuthController extends ServiceController
     /**
      * Verify nik of user
      * @body $area_id
-     * @return custom
+     * @return message
      */
     public function verifyNik() {
         $nik = $this->request->getPost('nik');
@@ -214,7 +211,7 @@ class AuthController extends ServiceController
 
         $model = $this->db
             ->table('user as a')
-            ->select('a.name, a.nik, a.email')
+            ->select('a.nik')
             ->where('a.status', 1)
             ->where('a.nik', $nik)
             ->orderBy('a.created_at', 'DESC')
@@ -223,7 +220,140 @@ class AuthController extends ServiceController
         if(empty($model)){
             return $this->respondSuccess(['message' => 'NIK siap digunakan']);  
         }else {
-            return $this->failNotFound('NIK telah terdaftar, silahkan masuk dengan NIK yang terdaftar');
+            return $this->fail('NIK telah terdaftar, silahkan masuk dengan NIK yang terdaftar');
         }
+    }
+
+    /**
+     * daftar user
+     * @body $data
+     * @return message
+     */
+    public function register() {
+        try{
+            if($this->request->getMethod() != 'POST'){
+                return $this->failForbidden('Request bad method');
+            }
+
+            $this->db->transStart();
+            $request = $this->request->getPost('data');
+            $data = (array) json_decode($request);
+            $data['nik'] = $this->strToBinary($data['nik']);
+
+            $model = $this->db
+                ->table('user as a')
+                ->select('a.nik')
+                ->where('a.nik', $data['nik'])
+                ->orWhere('a.email', $data['email'])
+                ->orderBy('a.created_at', 'DESC')
+                ->get()->getRowArray();
+            
+            if(!empty($model)){
+                return $this->fail('NIK ata Email telah terdaftar, silahkan masuk dengan email yang terdaftar');
+            }
+
+            $model = model(UserModel::class);
+            $data['password'] = $this->strEncode($data['password']);
+
+            //handle file
+            if (preg_match('/^data:(\w+\/\w+);base64,/', $data['photo'], $matches)) {
+                $fileType = $matches[1];
+                $base64String = substr($data['photo'], strpos($data['photo'], ',') + 1);
+                $fileData = base64_decode($base64String);
+
+                if($fileData === false){
+                    return $this->fail('gagal mengolah foto');
+                }
+
+                $fileExtension = explode('/', $fileType)[1];
+                $fileName = uniqid() . '.' . $fileExtension;
+
+                // Save the file
+                $filePath = 'img/user/' . $fileName;
+                if (!file_put_contents($filePath, $fileData)) {
+                    return $this->fail('gagal menyimpan foto');
+                }
+
+                $data['photo'] = $filePath;
+            } 
+
+            if(!$model->save($data)){
+                return $this->fail('Gagal registrasi user');   
+            }
+            $data['id'] = $model->insertID();
+
+            //check area user
+            $checkAreaUser = $this->db
+                ->table('area_code_generate as a')
+                ->select('a.code, a.area_id, b.user_id')
+                ->join('area_user b', 'a.area_id = b.area_id AND b.user_id = '. $data['id'], 'LEFT')
+                ->where('a.code', $data['area_generate'])
+                ->orderBy('a.created_at', 'DESC')
+                ->get()->getRowArray();
+
+            if(empty($checkAreaUser)) {
+                return $this->failNotFound('Area tidak ditemukan');   
+            }
+
+            if(!empty($checkAreaUser['user_id'])){
+                return $this->fail('Data Anda telah terdaftar di area ini');   
+            }
+
+            $model = model(AreaUserModel::class);
+            $areaUser['id'] = $model->generateCode();
+            $areaUser['user_id'] = $data['id'];
+            $areaUser['created_by'] = $data['id'];
+            $areaUser['area_id'] = $checkAreaUser['area_id'];
+            $areaUser['area_generate'] = $data['area_generate'];
+            $areaUser['role_id'] = 3;
+            $areaUser['status'] = 0;
+
+            if(!$model->save($areaUser)){
+                return $this->fail('Gagal mendaftarkan Area');   
+            }
+
+            $plainText = $areaUser['user_id'] . "." . $areaUser['id'] . "." . date('Y-m-d H:i:s');
+            $encode = strtr(base64_encode($plainText), '+/=', '-_,');
+            $data['activation'] = base_url().'service/userActivation?code=' . $encode;
+
+            $this->db->transComplete();
+            return $this->respondSuccess($data);
+        }catch (\Exception $e) {
+            return $this->failForbidden($e->getMessage());
+        }
+    }
+
+    /**
+     * activation of user
+     * @body $code
+     * @return message
+     */
+    public function userActivation() {
+        $this->db->transStart();
+        $code = $this->request->getGet('code');
+            
+        if(empty($code)){
+            return $this->failForbidden('Kode tidak diketahui');
+        }
+        $decode = base64_decode(strtr($code, '-_,', '+/='));
+        $splitCode  = explode('.', $decode);
+
+        $model = model(UserModel::class);
+        $data['id'] = $splitCode[0];
+        $data['activated_at'] = date('Y-m-d H:i:s');
+        $data['status'] = 1;
+        if(!$model->save($data)){
+            return $this->fail('Gagal aktivasi user');   
+        }
+
+        $model = model(AreaUserModel::class);
+        $data['id'] = $splitCode[1];
+        $data['status'] = 1;
+        if(!$model->save($data)){
+            return $this->fail('Gagal aktivasi area user');   
+        }
+        
+        $this->db->transComplete();
+        return $this->respondSuccess(['message' => 'User telah di aktivasi']);  
     }
 }
